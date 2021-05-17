@@ -4,7 +4,13 @@ int gcd (unsigned int n1, unsigned int n2) {
     return (n2 == 0) ? n1 : gcd (n2, n1 % n2);
 }
 
-void keyBuilder(int p, int q){
+void keyBuilder(){
+    int p, q;
+    std::cout << "Masukkan p = ";
+    std::cin >> p;
+    std::cout << "Masukkan q = ";
+    std::cin >> q;
+
     int cofac[20];
     double totd = 1;
     int kp = 0;
@@ -70,15 +76,33 @@ void keyBuilder(int p, int q){
             ks++;
         }
         std::cout << std::endl;
-        std::cout << "kp = " << kp << ", ks = " << ks << std::endl;
+        std::cout << "kp = " << kp << ", ks = " << ks << " | n = " << n << std::endl;
+    }
+}
+
+void enc(){
+    int e, n;
+    char msg[100];
+    char c[100];
+
+    scanf("%s", msg);
+
+    printf("Input e = ");
+    scanf("%d", &e);
+
+    printf("Input n = ");
+    scanf("%d", &n);
+
+    int i=0;
+    while (msg[i] != '\0')
+    {
+        c[i] = (msg[i] ^ e) % n;
+        printf("%x => %x\n",msg[i], c[i]);
+        i++;
     }
 }
 
 int main() {
-    int p, q;
-    std::cout << "Masukkan p = ";
-    std::cin >> p;
-    std::cout << "Masukkan q = ";
-    std::cin >> q;
-    keyBuilder(p,q);
+    keyBuilder();
+    enc();
 }
