@@ -4,6 +4,14 @@ int gcd (unsigned int n1, unsigned int n2) {
     return (n2 == 0) ? n1 : gcd (n2, n1 % n2);
 }
 
+int powMod(int msg, int ed, int n) {
+    int h = msg;
+    for (int i = 1; i < ed; i++){
+        h = (h*msg) % n;
+    }
+    return h;
+}
+
 void keyBuilder(){
     int p, q;
     std::cout << "Masukkan p = ";
@@ -83,7 +91,7 @@ void keyBuilder(){
 void rsa(){
     int e, d, n;
     char msg[100];
-    char c[100];
+    int c[100];
 
     scanf("%s", msg);
 
@@ -96,14 +104,12 @@ void rsa(){
     printf("Input n = ");
     scanf("%d", &n);
 
-    printf("%d, %d, %d", e, d, n);
-
     printf("Enkripsi\n");
     int i=0;
     while (msg[i] != '\0')
     {
-        c[i] = (msg[i] ^ e) % n;
-        printf("%d => %d\n",msg[i], c[i]);
+        c[i] = powMod(msg[i], e, n);
+        printf("%c = %d => %d\n",msg[i], msg[i], c[i]);
         i++;
     }
 
@@ -112,8 +118,8 @@ void rsa(){
     i = 0;
     while (c[i] != '\0')
     {
-        msg[i] = (c[i] ^ d) % n;
-        printf("%d => %d\n",c[i], msg[i]);
+        msg[i] = powMod(c[i], d, n);
+        printf("%d => %d = %c\n", c[i], msg[i], msg[i]);
         i++;
     }
 }
