@@ -80,8 +80,8 @@ void keyBuilder(){
     }
 }
 
-void enc(){
-    int e, n;
+void rsa(){
+    int e, d, n;
     char msg[100];
     char c[100];
 
@@ -90,19 +90,35 @@ void enc(){
     printf("Input e = ");
     scanf("%d", &e);
 
+    printf("Input d = ");
+    scanf("%d", &d);
+
     printf("Input n = ");
     scanf("%d", &n);
 
+    printf("%d, %d, %d", e, d, n);
+
+    printf("Enkripsi\n");
     int i=0;
     while (msg[i] != '\0')
     {
         c[i] = (msg[i] ^ e) % n;
-        printf("%x => %x\n",msg[i], c[i]);
+        printf("%d => %d\n",msg[i], c[i]);
+        i++;
+    }
+
+    printf("Dekripsi\n");
+
+    i = 0;
+    while (c[i] != '\0')
+    {
+        msg[i] = (c[i] ^ d) % n;
+        printf("%d => %d\n",c[i], msg[i]);
         i++;
     }
 }
 
 int main() {
-    keyBuilder();
-    enc();
+    // keyBuilder();
+    rsa();
 }
