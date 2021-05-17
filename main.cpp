@@ -1,44 +1,42 @@
 #include <iostream>
+#include "sha1.h"
+#include <string>
 
-int gcd (unsigned int n1, unsigned int n2) {
+#define uint unsigned int
+
+uint gcd (uint n1, uint n2) {
     return (n2 == 0) ? n1 : gcd (n2, n1 % n2);
 }
 
-int powMod(int msg, int ed, int n) {
-    int h = msg;
-    for (int i = 1; i < ed; i++){
+uint powMod(uint msg, uint ed, uint n) {
+    uint h = msg;
+    for (uint i = 1; i < ed; i++){
         h = (h*msg) % n;
     }
     return h;
 }
 
 void keyBuilder(){
-    int p, q;
-    std::cout << "Masukkan p = ";
-    std::cin >> p;
-    std::cout << "Masukkan q = ";
-    std::cin >> q;
-
-    int cofac[20];
+    uint p, q, d, n, kp = 0, kop = 0, cofactor[20];
     double totd = 1;
-    int kp = 0;
-    int kop = 0;
-    int n = p * q;
-    int tot = (p-1) * (q-1);
-    for (int i = 1; i < n; i++){
+
+    printf("Input p, q = ");
+    scanf("%d %d", &p, &q);
+
+    n = p * q;
+    for (uint i = 1; i < n; i++){
         if(gcd(kp, i) == 1){
             kp = i;
         }
     }
-    int d;
 
-    std::cout << "Masukkan d = ";
-    std::cin >> d;
+    printf("Masukkan d = ");
+    scanf("%d", &d);
 
     if (gcd(d,n) != 1){
         std::cout << "d dan n Tidak relatif prima atau terlalu kecil" << std::endl;
     } else {
-        int k = d;
+        uint k = d;
         int pem = 2;
         bool cc = false;
         
@@ -49,7 +47,7 @@ void keyBuilder(){
             
             if(k % pem == 0){
                 k = k / pem;
-                cofac[kop] = pem;
+                cofactor[kop] = pem;
                 kop = kop + 1;
             } else {
                 for (int i = pem+1; i < d; i++){
@@ -61,63 +59,53 @@ void keyBuilder(){
                             break;
                         }
                     }
-                    
-                    if (cc == false){
-                        pem = i;
-                        break;
-                    }
-                    
+
+                    if (cc) continue;
+                    pem = i;
+                    break;
+
                 }
             }            
         }
 
         int i = 0;
         totd = totd*d; 
-        while (cofac[i] != '\0')
+        while (cofactor[i] != '\0')
         {
-            totd = totd * (1-(1/cofac[i]));
+            totd = totd * (1-(1/cofactor[i]));
             i++;
         }
         
         int ks = 1;
-        while (gcd((ks*kp), totd) != 1){
+        while (gcd((ks*kp), (int) totd) != 1){
             ks++;
         }
-        std::cout << std::endl;
-        std::cout << "kp = " << kp << ", ks = " << ks << " | n = " << n << std::endl;
+
+        printf("Kp = %d, Ks = %d, n = %d\n", kp, ks, n);
     }
 }
 
 void rsa(){
-    int e, d, n;
+    uint e, d, n, c[100];
     char msg[100];
-    int c[100];
 
     scanf("%s", msg);
 
-    printf("Input e = ");
-    scanf("%d", &e);
+    printf("Input e, d, n = ");
+    scanf("%d %d %d", &e, &d, &n);
 
-    printf("Input d = ");
-    scanf("%d", &d);
-
-    printf("Input n = ");
-    scanf("%d", &n);
-
-    printf("Enkripsi\n");
-    int i=0;
-    while (msg[i] != '\0')
-    {
+    printf("Encryption\n");
+    uint i=0;
+    while (msg[i] != '\0'){
         c[i] = powMod(msg[i], e, n);
         printf("%c = %d => %d\n",msg[i], msg[i], c[i]);
         i++;
     }
 
-    printf("Dekripsi\n");
+    printf("Decryption\n");
 
     i = 0;
-    while (c[i] != '\0')
-    {
+    while (c[i] != '\0'){
         msg[i] = powMod(c[i], d, n);
         printf("%d => %d = %c\n", c[i], msg[i], msg[i]);
         i++;
@@ -125,6 +113,17 @@ void rsa(){
 }
 
 int main() {
-    // keyBuilder();
+    keyBuilder();
+    keyBuilder();
     rsa();
+    printf("Input message");
+    std::string mytext;
+    std::cin >> mytext;
+    rsa();
+
+    SHA1 checksum;
+    checksum.update(mytext);
+    std::string hash = checksum.final();
+
+    std::cout << "The SHA-1 of \"" << mytext << "\" is: " << hash << std::endl;
 }
