@@ -24,7 +24,6 @@ void keyBuilder(int p, int q){
     if (gcd(d,n) != 1){
         std::cout << "d dan n Tidak relatif prima atau terlalu kecil" << std::endl;
     } else {
-        std::cout << "Masuk";
         int k = d;
         int pem = 2;
         bool cc = false;
