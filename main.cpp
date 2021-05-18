@@ -155,8 +155,44 @@ void sender(){
     }
 }
 
+void receiver(){
+    uint e, d, n1, n2;
+    std::cout << "Input cipher = ";
+    std::string cipher;
+    std::cin >> cipher;
+
+    std::cout << "Input Ks receiver (e,n) = ";
+    std::cin >> d >> n1;
+
+    std::cout << "Input Kp sender (d,n) = ";
+    std::cin >> e >> n2;
+
+    uint c[cipher.length() - 40*4];
+
+    for (int i = 0, j=0; i < cipher.length() - 40*4, j<(cipher.length()-40*4)/4; i=i+4, j++) {
+        char app = cipher.at(i);
+        char app2 = cipher.at(i+1);
+        char app3 = cipher.at(i+2);
+        char app4 = cipher.at(i+3);
+        std::string append;
+        append.push_back(app);
+        append.push_back(app2);
+        append.push_back(app3);
+        append.push_back(app4);
+
+        uint x;
+        std::stringstream ss;
+        ss << std::hex << append;
+        ss >> x;
+
+        c[j] = x;
+//        std::cout << c[j] << std::endl;
+    }
+}
+
 int main() {
     sender();
+//    receiver();
 //    printf("Pair key sender\n");
 //    keyBuilder();
 //
