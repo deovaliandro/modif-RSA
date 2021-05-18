@@ -17,18 +17,15 @@ uint powMod(uint msg, uint ed, uint n) {
 }
 
 void keyBuilder(){
-    uint p, q, d, n, kp = 0, kop = 0, cofactor[20];
+    uint p, q, d, n, e = 0, kop = 0;
+    int cofactor[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     double totd = 1;
 
     printf("Input p, q = ");
     scanf("%d %d", &p, &q);
 
     n = p * q;
-    for (uint i = 1; i < n; i++){
-        if(gcd(kp, i) == 1){
-            kp = i;
-        }
-    }
+    uint totn = (p-1) * (q-1);
 
     printf("Masukkan d = ");
     scanf("%d", &d);
@@ -45,12 +42,15 @@ void keyBuilder(){
                 break;
             }
             
-            if(k % pem == 0){
+            if(k % pem == 0 && pem == k){
+                k = k / pem;
+                cofactor[kop] = pem;
+            }else if(k % pem == 0){
                 k = k / pem;
                 cofactor[kop] = pem;
                 kop = kop + 1;
             } else {
-                for (int i = pem+1; i < d; i++){
+                for (int i = pem+1; i <= d; i++){
                     for (int j=2; j < i; j++){
                         if(i % j != 0){
                             cc = false;
@@ -60,29 +60,44 @@ void keyBuilder(){
                         }
                     }
 
-                    if (cc) continue;
-                    pem = i;
-                    break;
-
+                    if (cc == false){
+                        pem = i;
+                        break;
+                    }
                 }
             }            
         }
 
         int i = 0;
         totd = totd*d; 
-        while (cofactor[i] != '\0')
-        {
+        while (cofactor[i] != 0){
             totd = totd * (1-(1/cofactor[i]));
             i++;
         }
+
+        for (uint i = 2; i < n; i++){
+            if(gcd(totn, i) == 1){
+                e = i;
+                break;
+            }
+        }
         
         int ks = 1;
-        while (gcd((ks*kp), (int) totd) != 1){
+        while (gcd((ks * e), (int) totd) != 1){
             ks++;
         }
 
-        printf("Kp = %d, Ks = %d, n = %d\n", kp, ks, n);
+        printf("e = %d, d = %d, n = %d\n", e, d, n);
     }
+}
+
+std::string encryption(){
+    std::string msg;
+    std::cin >> msg;
+
+    
+
+    return msg;
 }
 
 void rsa(){
@@ -113,17 +128,22 @@ void rsa(){
 }
 
 int main() {
+    printf("Pair key sender\n");
     keyBuilder();
+
+    printf("Pair key receiver\n");
     keyBuilder();
+
+    printf("Encryption RSA");
     rsa();
+
     printf("Input message");
     std::string mytext;
     std::cin >> mytext;
-    rsa();
 
     SHA1 checksum;
     checksum.update(mytext);
     std::string hash = checksum.final();
-
-    std::cout << "The SHA-1 of \"" << mytext << "\" is: " << hash << std::endl;
+    std::cout << "SHA-1 = " << hash << std::endl;
+    rsa();
 }

@@ -33,7 +33,6 @@ public:
     void update(const std::string &s);
     void update(std::istream &is);
     std::string final();
-    static std::string from_file(const std::string &filename);
 
 private:
     uint32_t digest[5];
@@ -314,15 +313,6 @@ inline std::string SHA1::final()
     reset(digest, buffer, transforms);
 
     return result.str();
-}
-
-
-inline std::string SHA1::from_file(const std::string &filename)
-{
-    std::ifstream stream(filename.c_str(), std::ios::binary);
-    SHA1 checksum;
-    checksum.update(stream);
-    return checksum.final();
 }
 
 #endif //MODIF_RSA_SHA1_H
