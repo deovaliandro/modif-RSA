@@ -91,59 +91,71 @@ void keyBuilder(){
     }
 }
 
-std::string encryption(){
+void sender(){
+    uint e, d, n1, n2;
+
+    std::cout << "Input message = ";
     std::string msg;
     std::cin >> msg;
 
-    
+    std::cout << "Input Kp receiver (e,n) = ";
+    std::cin >> e >> n1;
 
-    return msg;
-}
+    std::cout << "Input Ks sender (d,n) = ";
+    std::cin >> d >> n2;
 
-void rsa(){
-    uint e, d, n, c[100];
-    char msg[100];
-
-    scanf("%s", msg);
-
-    printf("Input e, d, n = ");
-    scanf("%d %d %d", &e, &d, &n);
-
-    printf("Encryption\n");
+    uint c[msg.length()];
     uint i=0;
     while (msg[i] != '\0'){
-        c[i] = powMod(msg[i], e, n);
-        printf("%c = %d => %d\n",msg[i], msg[i], c[i]);
+        c[i] = powMod(msg.at(i), e, n1);
         i++;
     }
 
-    printf("Decryption\n");
+    SHA1 checksum;
+    checksum.update(msg);
+    std::string hash = checksum.final();
 
-    i = 0;
-    while (c[i] != '\0'){
-        msg[i] = powMod(c[i], d, n);
-        printf("%d => %d = %c\n", c[i], msg[i], msg[i]);
+    uint chash[hash.length()];
+    i=0;
+    while (hash[i] != '\0'){
+        chash[i] = powMod(hash.at(i), d, n2);
         i++;
+    }
+
+    uint final[msg.length() + hash.length()];
+    std::string finalc;
+
+    for (int j = 0; j < msg.length(); j++) {
+        final[j] = c[j];
+    }
+
+    for (int j = msg.length(); j < msg.length()+hash.length(); j++) {
+        final[j] = chash[j];
+    }
+
+    for (int j = 0; j < msg.length()+hash.length(); j++) {
+        std::cout << std::hex << final[j];
     }
 }
 
 int main() {
-    printf("Pair key sender\n");
-    keyBuilder();
-
-    printf("Pair key receiver\n");
-    keyBuilder();
-
-    printf("Encryption RSA");
-    rsa();
-
-    printf("Input message");
-    std::string mytext;
-    std::cin >> mytext;
-
-    SHA1 checksum;
-    checksum.update(mytext);
-    std::string hash = checksum.final();
-    std::cout << "SHA-1 = " << hash << std::endl;
-    rsa();
+    sender();
+//    printf("Pair key sender\n");
+//    keyBuilder();
+//
+//    printf("Pair key receiver\n");
+//    keyBuilder();
+//
+//    printf("Encryption RSA");
+//    rsa();
+//
+//    printf("Input message");
+//    std::string mytext;
+//    std::cin >> mytext;
+//
+//    SHA1 checksum;
+//    checksum.update(mytext);
+//    std::string hash = checksum.final();
+//    std::cout << "SHA-1 = " << hash << std::endl;
+//    rsa();
 }
