@@ -1,6 +1,7 @@
 #include <iostream>
 #include "sha1.h"
 #include <string>
+#include <cstring>
 
 #define uint unsigned int
 
@@ -122,19 +123,35 @@ void sender(){
         i++;
     }
 
-    uint final[msg.length() + hash.length()];
-    std::string finalc;
+    int final[msg.length() + hash.length()];
 
     for (int j = 0; j < msg.length(); j++) {
         final[j] = c[j];
     }
 
     for (int j = msg.length(); j < msg.length()+hash.length(); j++) {
-        final[j] = chash[j];
+        final[j] = chash[j-msg.length()];
     }
 
+    std::string ffinal[msg.length()+hash.length()];
     for (int j = 0; j < msg.length()+hash.length(); j++) {
-        std::cout << std::hex << final[j];
+        std::stringstream stream;
+        stream << std::hex << final[j];
+        std::string result(stream.str());
+
+        uint len = 3 - result.length();
+        std::string dumm;
+        for (int k = 0; k < len; ++k) {
+            dumm.push_back('0');
+        }
+
+        dumm.append(result);
+        ffinal[j] = dumm;
+    }
+
+
+    for (int j = 0; j < msg.length()+hash.length(); j++) {
+        std::cout << ffinal[j];
     }
 }
 
