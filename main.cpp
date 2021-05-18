@@ -218,7 +218,7 @@ void receiver(){
     uint hash[40];
     std::string thash;
     i=0;
-    while (hashc[i] != '\0'){
+    while (i < 40){
         hash[i] = powMod(hashc[i], e, n2);
         thash.push_back(hash[i]);
         i++;
@@ -228,7 +228,7 @@ void receiver(){
     std::string toHash;
     for (int j = 0; j < (cipher.length() - 40*4)/4; j++) {
         printf("%c", msg[j]);
-        toHash.push_back(msg[i]);
+        toHash.push_back(msg[j]);
     }
 
     std::cout << std::endl;
