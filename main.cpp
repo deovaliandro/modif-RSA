@@ -97,7 +97,7 @@ void sender(){
 
     std::cout << "Input message = ";
     std::string msg;
-    std::cin >> msg;
+    std::getline(std::cin, msg);
 
     std::cout << "Input Kp receiver (e,n) = ";
     std::cin >> e >> n1;
@@ -139,7 +139,7 @@ void sender(){
         stream << std::hex << final[j];
         std::string result(stream.str());
 
-        uint len = 3 - result.length();
+        uint len = 4 - result.length();
         std::string dumm;
         for (int k = 0; k < len; ++k) {
             dumm.push_back('0');
