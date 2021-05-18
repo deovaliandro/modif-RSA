@@ -167,7 +167,8 @@ void receiver(){
     std::cout << "Input Kp sender (d,n) = ";
     std::cin >> e >> n2;
 
-    uint c[cipher.length() - 40*4];
+    uint c[(cipher.length() - 40*4)/4];
+    uint hashc[40];
 
     for (int i = 0, j=0; i < cipher.length() - 40*4, j<(cipher.length()-40*4)/4; i=i+4, j++) {
         char app = cipher.at(i);
@@ -186,13 +187,62 @@ void receiver(){
         ss >> x;
 
         c[j] = x;
-//        std::cout << c[j] << std::endl;
     }
+
+    for (int i = cipher.length() - 40*4, j=0; i < cipher.length(), j<40; i=i+4, j++) {
+        char app = cipher.at(i);
+        char app2 = cipher.at(i+1);
+        char app3 = cipher.at(i+2);
+        char app4 = cipher.at(i+3);
+        std::string append;
+        append.push_back(app);
+        append.push_back(app2);
+        append.push_back(app3);
+        append.push_back(app4);
+
+        uint x;
+        std::stringstream ss;
+        ss << std::hex << append;
+        ss >> x;
+
+        hashc[j] = x;
+    }
+
+    uint msg[(cipher.length() - 40*4)/4];
+    uint i=0;
+    while (c[i] != '\0'){
+        msg[i] = powMod(c[i], d, n1);
+        i++;
+    }
+
+    uint hash[40];
+    std::string thash;
+    i=0;
+    while (hashc[i] != '\0'){
+        hash[i] = powMod(hashc[i], e, n2);
+        thash.push_back(hash[i]);
+        i++;
+    }
+
+    std::cout << "Message = ";
+    std::string toHash;
+    for (int j = 0; j < (cipher.length() - 40*4)/4; j++) {
+        printf("%c", msg[j]);
+        toHash.push_back(msg[i]);
+    }
+
+    std::cout << std::endl;
+
+    SHA1 checksum;
+    checksum.update(toHash);
+    std::string fhash = checksum.final();
+
+    std::cout << thash << " " << fhash << std::endl;
 }
 
 int main() {
-    sender();
-//    receiver();
+//    sender();
+    receiver();
 //    printf("Pair key sender\n");
 //    keyBuilder();
 //
