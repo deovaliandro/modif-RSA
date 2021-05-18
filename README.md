@@ -57,3 +57,7 @@ Hash dari pesan yang didekripsi = `c65f99f8c5376adadddc46d5cbcf5762f9e55eb7`
 Hal ini menandakan pesan tidak berubah.
 
 *Berhasil*
+
+Bukti:
+
+![hasilrunning](/img/berhasil.png)
