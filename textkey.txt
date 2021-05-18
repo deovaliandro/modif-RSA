@@ -4,3 +4,13 @@
 1783 3233
 
 1af52c53ce39d10dca3df9120b99367fab2b59ee
+
+
+Pair key sender
+Input p, q = 61 53
+Masukkan d = 1783
+e = 7, d = 1783, n = 3233
+Pair key receiver
+Input p, q = 17 11
+Masukkan d = 23
+e = 3, d = 23, n = 187

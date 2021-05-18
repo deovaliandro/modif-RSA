@@ -76,7 +76,7 @@ void keyBuilder(){
             i++;
         }
 
-        for (uint i = 2; i < n; i++){
+        for (uint i = 7; i < n; i++){
             if(gcd(totn, i) == 1){
                 e = i;
                 break;
@@ -97,7 +97,9 @@ void sender(){
 
     std::cout << "Input message = ";
     std::string msg;
-    std::getline(std::cin, msg);
+    std::cin >> msg;
+//    std::getline(std::cin, msg);
+//    std::cout << std::endl;
 
     std::cout << "Input Kp receiver (e,n) = ";
     std::cin >> e >> n1;
@@ -153,6 +155,7 @@ void sender(){
     for (int j = 0; j < msg.length()+hash.length(); j++) {
         std::cout << ffinal[j];
     }
+    std::cout << std::endl;
 }
 
 void receiver(){
@@ -241,24 +244,12 @@ void receiver(){
 }
 
 int main() {
-//    sender();
+    printf("Pair key sender\n");
+    keyBuilder();
+
+    printf("Pair key receiver\n");
+    keyBuilder();
+
+    sender();
     receiver();
-//    printf("Pair key sender\n");
-//    keyBuilder();
-//
-//    printf("Pair key receiver\n");
-//    keyBuilder();
-//
-//    printf("Encryption RSA");
-//    rsa();
-//
-//    printf("Input message");
-//    std::string mytext;
-//    std::cin >> mytext;
-//
-//    SHA1 checksum;
-//    checksum.update(mytext);
-//    std::string hash = checksum.final();
-//    std::cout << "SHA-1 = " << hash << std::endl;
-//    rsa();
 }
