@@ -1,7 +1,6 @@
 #include <iostream>
 #include "sha1.h"
 #include <string>
-#include <cstring>
 
 #define uint unsigned int
 
@@ -18,18 +17,18 @@ uint powMod(uint msg, uint ed, uint n) {
 }
 
 void keyBuilder(){
-    uint p, q, d, n, e = 0, kop = 0;
-    int cofactor[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint p{}, q{}, d{}, n{}, e = 0, kop = 0;
+    int cofactor[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     double totd = 1;
 
-    printf("Input p, q = ");
-    scanf("%d %d", &p, &q);
+    std::cout << "Input p, q = ";
+    std::cin >> p >> q;
 
     n = p * q;
     uint totn = (p-1) * (q-1);
 
-    printf("Masukkan d = ");
-    scanf("%d", &d);
+    std::cout << "Input d = ";
+    std::cin >> d;
 
     if (gcd(d,n) != 1){
         std::cout << "d dan n Tidak relatif prima atau terlalu kecil" << std::endl;
@@ -88,18 +87,16 @@ void keyBuilder(){
             ks++;
         }
 
-        printf("e = %d, d = %d, n = %d\n", e, d, n);
+        std::cout << "Pk = (" << e << ", " << n << "), PrK = (" << d << ", " << n << ")" << std::endl;
     }
 }
 
 void sender(){
-    uint e, d, n1, n2;
+    uint e{}, d{}, n1{}, n2{};
 
     std::cout << "Input message = ";
     std::string msg;
     std::cin >> msg;
-//    std::getline(std::cin, msg);
-//    std::cout << std::endl;
 
     std::cout << "Input Kp receiver (e,n) = ";
     std::cin >> e >> n1;
@@ -240,7 +237,10 @@ void receiver(){
     checksum.update(toHash);
     std::string fhash = checksum.final();
 
-    std::cout << thash << " " << fhash << std::endl;
+    if (thash == fhash) {
+        std::cout << "Verified" << std::endl;
+        std::cout << "First hash from cipher = " << thash << " , and second hash from message = " << fhash << std::endl;
+    }
 }
 
 int main() {
