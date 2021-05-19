@@ -1,3 +1,8 @@
+/*
+    main.cpp
+    an implementation of RSA modification
+    original code by @deovaliandro
+*/
 #include <iostream>
 #include "sha1.h"
 #include <string>
