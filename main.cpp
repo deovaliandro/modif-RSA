@@ -5,6 +5,7 @@
 */
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "sha1.h"
 
@@ -14,8 +15,8 @@ uint gcd(uint n1, uint n2) {
     return (n2 == 0) ? n1 : gcd(n2, n1 % n2);
 }
 
-uint powMod(uint msg, uint ed, uint n) {
-    uint h = msg;
+int powMod(int msg, int ed, int n) {
+    int h = msg;
 
     for (uint i = 1; i < ed; i++) {
         h = (h * msg) % n;
@@ -32,7 +33,7 @@ void keyBuilder() {
     std::cout << "Input p, q = ";
     std::cin >> p >> q;
 
-    int n = p * q;
+    uint n = p * q;
     uint totn = (p - 1) * (q - 1);
 
     std::cout << "Input d = ";
@@ -68,7 +69,7 @@ void keyBuilder() {
                         }
                     }
 
-                    if (cc == false) {
+                    if (!cc) {
                         pem = i;
                         break;
                     }
@@ -79,13 +80,13 @@ void keyBuilder() {
         int i = 0;
         totd = totd * d;
         while (cofactor[i] != 0) {
-            totd = totd * (1 - (1 / cofactor[i]));
+            totd = totd * (1 - (1.0 / cofactor[i]));
             i++;
         }
 
-        for (uint i = 7; i < n; i++) {
-            if (gcd(totn, i) == 1) {
-                e = i;
+        for (uint j = 7; j < n; j++) {
+            if (gcd(totn, j) == 1) {
+                e = j;
                 break;
             }
         }
@@ -100,7 +101,7 @@ void keyBuilder() {
 }
 
 void sender() {
-    uint e = 0, d = 0, n1 = 0, n2 = 0;
+    int e = 0, d = 0, n1 = 0, n2 = 0;
 
     std::cout << "Input message = ";
     std::string msg;
@@ -112,11 +113,10 @@ void sender() {
     std::cout << "Input Ks sender (d,n) = ";
     std::cin >> d >> n2;
 
-    uint msglen = sizeof(msg) / sizeof (msg[0]);
-    uint c[msglen] = {0};
+    std::vector<int> c(msg.length());
     uint i = 0;
     while (msg[i] != '\0') {
-        c[i] = powMod(msg.at(i), e, n1);
+        c.push_back(powMod(msg.at(i), e, n1));
         i++;
     }
 
@@ -124,21 +124,21 @@ void sender() {
     checksum.update(msg);
     std::string hash = checksum.final();
 
-    uint chash[msglen] = {0};
+    std::vector<int> chash(msg.length());
     i = 0;
     while (hash[i] != '\0') {
-        chash[i] = powMod(hash.at(i), d, n2);
+        chash.push_back(powMod(hash.at(i), d, n2));
         i++;
     }
 
     uint flength = msg.length() + hash.length();
-    uint final[flength] = {0};
+    std::vector<int> final(flength);
     for (int j = 0; j < msg.length(); j++) {
-        final[j] = c[j];
+        final.push_back(c[j]);
     }
 
-    for (int j = msg.length(); j < flength; j++) {
-        final[j] = chash[j - msg.length()];
+    for (int j = (int) msg.length(); j < flength; j++) {
+        final.push_back(chash[j - msg.length()]);
     }
 
     std::string ffinal[flength];
@@ -165,7 +165,7 @@ void sender() {
 }
 
 void receiver() {
-    uint e, d, n1, n2;
+    int e, d, n1, n2;
     std::cout << "Input cipher = ";
     std::string cipher;
     std::cin >> cipher;
@@ -176,21 +176,21 @@ void receiver() {
     std::cout << "Input Kp sender (d,n) = ";
     std::cin >> e >> n2;
 
-    uint c[(cipher.length() - 40 * 4) / 4];
-    uint hashc[40] = {0};
+    int c[(cipher.length() - 40 * 4) / 4];
+    int hashc[40] = {0};
 
-    for (int i = 0, j = 0; i < cipher.length() - 40 * 4, j < (cipher.length() - 40 * 4) / 4; i = i + 4, j++) {
+    for (int i = 0, j = 0; j < (cipher.length() - 40 * 4) / 4; i = i + 4, j++) {
         char app = cipher.at(i);
         char app2 = cipher.at(i + 1);
         char app3 = cipher.at(i + 2);
         char app4 = cipher.at(i + 3);
-        std::string append = "";
+        std::string append;
         append.push_back(app);
         append.push_back(app2);
         append.push_back(app3);
         append.push_back(app4);
 
-        uint x = 0;
+        int x = 0;
         std::stringstream ss;
         ss << std::hex << append;
         ss >> x;
@@ -198,18 +198,18 @@ void receiver() {
         c[j] = x;
     }
 
-    for (int i = cipher.length() - 40 * 4, j = 0; i < cipher.length(), j < 40; i = i + 4, j++) {
+    for (int i = (int) cipher.length() - 40 * 4, j = 0; j < 40; i = i + 4, j++) {
         char app = cipher.at(i);
         char app2 = cipher.at(i + 1);
         char app3 = cipher.at(i + 2);
         char app4 = cipher.at(i + 3);
-        std::string append = "";
+        std::string append;
         append.push_back(app);
         append.push_back(app2);
         append.push_back(app3);
         append.push_back(app4);
 
-        uint x;
+        int x;
         std::stringstream ss;
         ss << std::hex << append;
         ss >> x;
@@ -217,8 +217,8 @@ void receiver() {
         hashc[j] = x;
     }
 
-    uint msg[(cipher.length() - 40 * 4) / 4];
-    uint i = 0;
+    int msg[(cipher.length() - 40 * 4) / 4];
+    int i = 0;
     while (c[i] != '\0') {
         msg[i] = powMod(c[i], d, n1);
         i++;
@@ -229,15 +229,14 @@ void receiver() {
     i = 0;
     while (i < 40) {
         hash[i] = powMod(hashc[i], e, n2);
-        thash.push_back(hash[i]);
+        thash.push_back((char) hash[i]);
         i++;
     }
 
     std::cout << "Message = ";
     std::string toHash;
     for (int j = 0; j < (cipher.length() - 40 * 4) / 4; j++) {
-        printf("%c", msg[j]);
-        toHash.push_back(msg[j]);
+        toHash.push_back((char) msg[j]);
     }
 
     std::cout << std::endl;
