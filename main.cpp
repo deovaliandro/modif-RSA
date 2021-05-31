@@ -1,8 +1,10 @@
 /*
     main.cpp
+    sha1.h from
     an implementation of RSA modification
     original code by @deovaliandro
 */
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -39,8 +41,8 @@ void keyBuilder() {
     std::cout << "Input d = ";
     std::cin >> d;
 
-    if (gcd(d, n) != 1) {
-        std::cout << "d dan n Tidak relatif prima atau terlalu kecil" << std::endl;
+    if (gcd(d, n) != 1 && n - std::max(p, q) && d < n) {
+        std::cout << "d dan n tidak relatif prima atau terlalu kecil" << std::endl;
     } else {
         uint k = d;
         int pem = 2;
