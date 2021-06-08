@@ -11,16 +11,16 @@
 
 #include "sha1.h"
 
-#define uint unsigned int
+#define unsigned int unsigned int
 
-uint gcd(uint n1, uint n2) {
+std::uint64_t gcd(std::uint64_t n1, std::uint64_t n2) {
     return (n2 == 0) ? n1 : gcd(n2, n1 % n2);
 }
 
 int powMod(int msg, int ed, int n) {
     int h = msg;
 
-    for (uint i = 1; i < ed; i++) {
+    for (int i = 1; i < ed; i++) {
         h = (h * msg) % n;
     }
 
@@ -28,15 +28,15 @@ int powMod(int msg, int ed, int n) {
 }
 
 void keyBuilder() {
-    uint p = 0, q = 0, d = 0, e = 0, kop = 0;
-    int cofactor[20] = {0};
-    double totd = 1.0;
+    std::uint64_t p = 0, q = 0, d = 0, e = 0, kop = 0;
+    std::vector<int> cofactor;
+    double totd = 0.0;
 
     std::cout << "Input p, q = ";
     std::cin >> p >> q;
 
-    uint n = p * q;
-    uint totn = (p - 1) * (q - 1);
+    std::uint64_t n = p * q;
+    std::uint64_t totn = (p - 1) * (q - 1);
 
     std::cout << "Input d = ";
     std::cin >> d;
@@ -44,7 +44,7 @@ void keyBuilder() {
     if (gcd(d, n) != 1 && n - std::max(p, q) && d < n) {
         std::cout << "d dan n tidak relatif prima atau terlalu kecil" << std::endl;
     } else {
-        uint k = d;
+        int k = (int) d;
         int pem = 2;
         bool cc = false;
 
@@ -55,10 +55,10 @@ void keyBuilder() {
 
             if (k % pem == 0 && pem == k) {
                 k = k / pem;
-                cofactor[kop] = pem;
+                cofactor.push_back(pem);
             } else if (k % pem == 0) {
                 k = k / pem;
-                cofactor[kop] = pem;
+                cofactor.push_back(pem);
                 kop = kop + 1;
             } else {
                 for (int i = pem + 1; i <= d; i++) {
@@ -79,14 +79,13 @@ void keyBuilder() {
             }
         }
 
-        int i = 0;
-        totd = totd * d;
-        while (cofactor[i] != 0) {
-            totd = totd * (1 - (1.0 / cofactor[i]));
-            i++;
+        totd = totd * (int) d;
+
+        for (int j : cofactor) {
+            totd = totd * (1 - (1.0 / j));
         }
 
-        for (uint j = 7; j < n; j++) {
+        for (int j = 7; j < n; j++) {
             if (gcd(totn, j) == 1) {
                 e = j;
                 break;
@@ -116,7 +115,7 @@ void sender() {
     std::cin >> d >> n2;
 
     std::vector<int> c(msg.length());
-    uint i = 0;
+    std::uint64_t i = 0;
     while (msg[i] != '\0') {
         c.push_back(powMod(msg.at(i), e, n1));
         i++;
@@ -226,7 +225,7 @@ void receiver() {
         i++;
     }
 
-    uint hash[40] = {0};
+    int hash[40] = {0};
     std::string thash;
     i = 0;
     while (i < 40) {
