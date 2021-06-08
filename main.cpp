@@ -17,8 +17,8 @@ std::uint64_t gcd(std::uint64_t n1, std::uint64_t n2) {
     return (n2 == 0) ? n1 : gcd(n2, n1 % n2);
 }
 
-int powMod(int msg, int ed, int n) {
-    int h = msg;
+std::uint64_t powMod(std::uint64_t msg, std::uint64_t ed, std::uint64_t n) {
+    std::uint64_t h = msg;
 
     for (int i = 1; i < ed; i++) {
         h = (h * msg) % n;
@@ -29,14 +29,14 @@ int powMod(int msg, int ed, int n) {
 
 void keyBuilder() {
     std::uint64_t p = 0, q = 0, d = 0, e = 0, kop = 0;
-    std::vector<int> cofactor;
-    double totd = 0.0;
+    std::vector<std::uint64_t> cofactor;
+    double totD = 0.0;
 
     std::cout << "Input p, q = ";
     std::cin >> p >> q;
 
     std::uint64_t n = p * q;
-    std::uint64_t totn = (p - 1) * (q - 1);
+    std::uint64_t totN = (p - 1) * (q - 1);
 
     std::cout << "Input d = ";
     std::cin >> d;
@@ -79,21 +79,21 @@ void keyBuilder() {
             }
         }
 
-        totd = totd * (int) d;
+        totD = totD * (int) d;
 
-        for (int j : cofactor) {
-            totd = totd * (1 - (1.0 / j));
+        for (uint j : cofactor) {
+            totD = totD * (1 - (1.0 / j));
         }
 
         for (int j = 7; j < n; j++) {
-            if (gcd(totn, j) == 1) {
+            if (gcd(totN, j) == 1) {
                 e = j;
                 break;
             }
         }
 
         int ks = 1;
-        while (gcd((ks * e), (int) totd) != 1) {
+        while (gcd((ks * e), (int) totD) != 1) {
             ks++;
         }
 
@@ -102,7 +102,7 @@ void keyBuilder() {
 }
 
 void sender() {
-    int e = 0, d = 0, n1 = 0, n2 = 0;
+    std::uint64_t e = 0, d = 0, n1 = 0, n2 = 0;
 
     std::cout << "Input message = ";
     std::string msg;
@@ -114,7 +114,7 @@ void sender() {
     std::cout << "Input Ks sender (d,n) = ";
     std::cin >> d >> n2;
 
-    std::vector<int> c(msg.length());
+    std::vector<std::uint64_t> c(msg.length());
     std::uint64_t i = 0;
     while (msg[i] != '\0') {
         c.push_back(powMod(msg.at(i), e, n1));
@@ -125,7 +125,7 @@ void sender() {
     checksum.update(msg);
     std::string hash = checksum.final();
 
-    std::vector<int> chash(msg.length());
+    std::vector<std::uint64_t> chash(msg.length());
     i = 0;
     while (hash[i] != '\0') {
         chash.push_back(powMod(hash.at(i), d, n2));
@@ -133,7 +133,7 @@ void sender() {
     }
 
     uint flength = msg.length() + hash.length();
-    std::vector<int> final(flength);
+    std::vector<std::uint64_t> final(flength);
     for (int j = 0; j < msg.length(); j++) {
         final.push_back(c[j]);
     }
@@ -166,7 +166,7 @@ void sender() {
 }
 
 void receiver() {
-    int e, d, n1, n2;
+    std::uint64_t e, d, n1, n2;
     std::cout << "Input cipher = ";
     std::string cipher;
     std::cin >> cipher;
@@ -177,8 +177,8 @@ void receiver() {
     std::cout << "Input Kp sender (d,n) = ";
     std::cin >> e >> n2;
 
-    int c[(cipher.length() - 40 * 4) / 4];
-    int hashc[40] = {0};
+    std::uint64_t c[(cipher.length() - 40 * 4) / 4];
+    std::vector<std::uint64_t> hashC;
 
     for (int i = 0, j = 0; j < (cipher.length() - 40 * 4) / 4; i = i + 4, j++) {
         char app = cipher.at(i);
@@ -215,22 +215,22 @@ void receiver() {
         ss << std::hex << append;
         ss >> x;
 
-        hashc[j] = x;
+        hashC.push_back(x);
     }
 
-    int msg[(cipher.length() - 40 * 4) / 4];
+    std::uint64_t msg[(cipher.length() - 40 * 4) / 4];
     int i = 0;
     while (c[i] != '\0') {
         msg[i] = powMod(c[i], d, n1);
         i++;
     }
 
-    int hash[40] = {0};
-    std::string thash;
+    std::vector<std::uint64_t> hash;
+    std::string tHash;
     i = 0;
     while (i < 40) {
-        hash[i] = powMod(hashc[i], e, n2);
-        thash.push_back((char) hash[i]);
+        hash.push_back(powMod(hashC.at(i), e, n2));
+        tHash.push_back((char) hash.at(i));
         i++;
     }
 
@@ -244,11 +244,12 @@ void receiver() {
 
     SHA1 checksum;
     checksum.update(toHash);
-    std::string fhash = checksum.final();
+    std::string fHash = checksum.final();
 
-    if (thash == fhash) {
+    if (tHash == fHash) {
         std::cout << "Verified" << std::endl;
-        std::cout << "First hash from cipher = " << thash << " , and second hash from message = " << fhash << std::endl;
+        std::cout << "First hash from cipher = " << tHash << " , and second hash from message = "
+        << fHash << std::endl;
     }
 }
 
